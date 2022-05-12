@@ -1,0 +1,29 @@
+version: "3"
+services:
+  frontend:
+    profiles:
+      - "full"
+    build: ./frontend
+    ports:
+      - "8080:8080"
+    environment:
+      - BACKEND_HOST=http://backend:8081
+  backend:
+    build: .
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/cloud-dev
+      - SPRING_DATASOURCE_USERNAME=itm00
+      - SPRING_DATASOURCE_PASSWORD=qwerty
+  db:
+    image: "postgres:13.1-alpine"
+    container_name: db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=itm00
+      - POSTGRES_PASSWORD=qwerty
+      - POSTGRES_DB=cloud-dev

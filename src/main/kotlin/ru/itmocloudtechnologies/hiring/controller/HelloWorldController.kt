@@ -1,4 +1,4 @@
-package ru.itmocloudtechnologies.hiring.controllers
+package ru.itmocloudtechnologies.hiring.controller
 
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController

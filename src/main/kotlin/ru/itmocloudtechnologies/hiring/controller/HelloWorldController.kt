@@ -8,7 +8,7 @@ class HelloWorldController {
 
     @GetMapping("/")
     fun hello(): String {
-        return "Hello world"
+        return "Hello world from backend"
     }
 
 }

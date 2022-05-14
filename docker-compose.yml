@@ -1,6 +1,7 @@
 version: "3"
 services:
   frontend:
+#    image: orfacello/itmo-cloud-frontend:v0
     profiles:
       - "full"
     build: ./frontend
@@ -10,6 +11,7 @@ services:
       - BACKEND_HOST=http://backend:8081
   backend:
     build: .
+#    image: orfacello/itmo-cloud-backend:v0
     ports:
       - "8081:8081"
     depends_on:

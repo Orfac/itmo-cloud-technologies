@@ -2,27 +2,20 @@ package ru.itmocloudtechnologies.hiring.configuration
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-import org.springframework.web.filter.CorsFilter
+import org.springframework.web.servlet.config.annotation.CorsRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+
 
 @Configuration
-class CorsFilterConfiguration {
+class CorsConfiguration {
     @Bean
-    fun corsFilter(): CorsFilter {
-        val source = UrlBasedCorsConfigurationSource()
-        val config = CorsConfiguration()
-        config.allowCredentials = true
-        config.addAllowedOrigin("*") // this allows all origin
-        config.addAllowedHeader("*") // this allows all headers
-        config.addAllowedMethod("OPTIONS")
-        config.addAllowedMethod("HEAD")
-        config.addAllowedMethod("GET")
-        config.addAllowedMethod("PUT")
-        config.addAllowedMethod("POST")
-        config.addAllowedMethod("DELETE")
-        config.addAllowedMethod("PATCH")
-        source.registerCorsConfiguration("/**", config)
-        return CorsFilter(source)
+    fun corsConfigurer(): WebMvcConfigurer? {
+        return object : WebMvcConfigurer {
+            override fun addCorsMappings(registry: CorsRegistry) {
+                registry.addMapping("/**")
+                    .allowedOrigins("*")
+                    .allowedMethods("*")
+            }
+        }
     }
 }

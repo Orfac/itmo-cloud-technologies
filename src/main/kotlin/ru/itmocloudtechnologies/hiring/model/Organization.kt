@@ -6,9 +6,10 @@ import javax.validation.constraints.Positive
 
 @Embeddable
 data class Organization(
-    @Positive
-    private val employeesCount: Int,
+    @field:Positive
+    @Column(nullable = false)
+    private val employeesCount: Int?,
 
     @Column(nullable = true)
-    private val type: OrganizationType
+    private val type: OrganizationType?
 )

@@ -1,9 +1,11 @@
 package ru.itmocloudtechnologies.hiring.model
 
+import ru.itmocloudtechnologies.hiring.validation.group.CreateGroup
 import java.time.LocalDate
 import javax.persistence.*
-import javax.validation.constraints.NotEmpty
+import javax.validation.Valid
 import javax.validation.constraints.NotNull
+import javax.validation.constraints.Size
 
 @Entity
 data class Worker(
@@ -11,29 +13,31 @@ data class Worker(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int = 0,
 
-    @NotEmpty
+    @field:NotNull(groups = [CreateGroup::class])
+    @field:Size(min = 1)
     @Column(nullable = false)
-    val name: String,
+    var name: String?,
 
-    @NotNull
+    @field:NotNull(groups = [CreateGroup::class])
+    @field:Valid
     @Column(nullable = false)
-    val coordinates: Coordinates,
+    var coordinates: Coordinates?,
 
-    @NotNull
+    @field:NotNull(groups = [CreateGroup::class])
     @Column(nullable = false)
-    val salary: Float,
+    var salary: Float?,
 
-    @NotNull
+    @field:NotNull(groups = [CreateGroup::class])
     @Column(nullable = false)
-    val position: Position,
+    var position: Position?,
 
-    @NotNull
+    @field:NotNull(groups = [CreateGroup::class])
     @Column(nullable = false)
-    val status: Status,
+    var status: Status?,
 
-    @NotNull
+    @field:NotNull(groups = [CreateGroup::class])
     @Column(nullable = false)
-    val organizationType: OrganizationType,
+    var organizationType: OrganizationType?,
 ) {
     @Column(nullable = false)
     val creationDate: LocalDate = LocalDate.now()

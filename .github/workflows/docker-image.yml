@@ -22,6 +22,12 @@ jobs:
       with:
         arguments: build
         build-root-directory: /home/runner/work/itmo-cloud-technologies/itmo-cloud-technologies
+        
+    - name: Upload build reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-reports
+        path: build/libs/
 
     - uses: actions/checkout@v3
     - name: Build the Docker image

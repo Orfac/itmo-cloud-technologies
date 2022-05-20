@@ -1,5 +1,6 @@
 package ru.itmocloudtechnologies.hiring.configuration
 
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import ru.itmocloudtechnologies.hiring.model.*
@@ -11,7 +12,7 @@ class InitialWorkersUploader(workerService: WorkerService) {
     companion object {
         private const val SEED = 12345
         val random = Random(SEED)
-        val logger = LoggerFactory.getLogger(javaClass)
+        val logger: Logger = LoggerFactory.getLogger(InitialWorkersUploader::class.java)
     }
 
     init {

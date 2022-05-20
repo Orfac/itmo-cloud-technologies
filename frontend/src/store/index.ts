@@ -23,7 +23,9 @@ export default createStore({
       this.commit( 'updateWorkersList', result )
     },
     async deleteWorker( state, id: number ) {
-      const response = await fetch( this.state.url + '/' + id )
+      const response = await fetch( this.state.url + '/' + id, {
+        method: 'DELETE',
+      })
     }
   },
   modules: {},

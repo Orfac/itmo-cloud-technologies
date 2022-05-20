@@ -30,10 +30,6 @@ const workers = computed( () => store.getters.workers )
 
 const selectedWorkerId = ref( -1 )
 
-const test = () => {
-  console.log( workers.value )
-}
-
 const tableColumns = [
   {
     label: '№',

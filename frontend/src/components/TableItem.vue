@@ -132,7 +132,6 @@ const rowClick = ( id: number, index: number ) => {
 }
 
 const deleteRow = ( id: number ) => {
-  console.log( id )
   emit( 'deleteRow', id )
 }
 

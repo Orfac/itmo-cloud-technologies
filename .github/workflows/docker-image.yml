@@ -22,7 +22,7 @@ jobs:
       with:
         arguments: build
         # Path to the root directory of the build
-        build-root-directory: /home/runner/work/itmo-cloud-technologies/build
+        build-root-directory: /home/runner/work/itmo-cloud-technologies
 
     - uses: actions/checkout@v3
     - name: Build the Docker image

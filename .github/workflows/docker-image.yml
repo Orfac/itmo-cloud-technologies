@@ -17,11 +17,11 @@ jobs:
       with:
           java-version: 17
           
-#     - name: Gradle Build Action
-#       uses: gradle/gradle-build-action@v2.1.6
-#       with:
-#         arguments: build
-#         build-root-directory: /home/runner/work/itmo-cloud-technologies/itmo-cloud-technologies
+    - name: Gradle Build Action
+      uses: gradle/gradle-build-action@v2.1.6
+      with:
+        arguments: build
+        build-root-directory: /home/runner/work/itmo-cloud-technologies/itmo-cloud-technologies
 
     - uses: actions/checkout@v3
     - name: Build the Docker image

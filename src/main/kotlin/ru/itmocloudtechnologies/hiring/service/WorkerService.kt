@@ -1,5 +1,9 @@
 package ru.itmocloudtechnologies.hiring.service
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import ru.itmocloudtechnologies.hiring.dto.FilterWorkersRequest
 import ru.itmocloudtechnologies.hiring.model.Coordinates
@@ -16,13 +20,14 @@ class WorkerService(
     private val entityManager: EntityManager
 ) {
 
-    fun getLessThanSalary(salary: Float): List<Worker> = workerRepository.findAllBySalaryLessThan(salary)
+    fun getLessThanSalary(salary: Float): List<Worker> =
+        workerRepository.findAllBySalaryLessThan(salary)
 
     fun getWithSmallestStatus(): Optional<Worker> = workerRepository.findFirstByOrderByStatus()
 
     fun findAll(
         filter: FilterWorkersRequest
-    ): List<Worker> {
+    ): Page<Worker> {
         val cb = entityManager.criteriaBuilder
 
         var cq = cb.createQuery(Worker::class.java)
@@ -93,18 +98,20 @@ class WorkerService(
             )
         )
 
-        cq = if (filter.sortedColumn != null) {
+        cq = if (filter.sortedDirection == "ASC") {
             cq.orderBy(cb.asc(root.get<Any>(filter.sortedColumn)))
         } else {
-            cq.orderBy(cb.asc(root.get<Int>("id")))
+            cq.orderBy(cb.desc(root.get<Any>(filter.sortedColumn)))
         }
 
         val query = entityManager.createQuery(cq)
+        val maxCount = query.resultList.size
+        val pageable = PageRequest.of(filter.pageNum, filter.pageSize)
 
         query.maxResults = filter.pageSize
         query.firstResult = filter.pageNum * filter.pageSize
 
-        return query.resultList
+        return PageImpl(query.resultList, pageable, maxCount.toLong())
     }
 
     fun deleteBySalary(salary: Float): Long {

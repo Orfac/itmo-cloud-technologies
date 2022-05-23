@@ -1,5 +1,7 @@
 package ru.itmocloudtechnologies.hiring.controller
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -11,6 +13,7 @@ import ru.itmocloudtechnologies.hiring.model.Status
 import ru.itmocloudtechnologies.hiring.model.Worker
 import ru.itmocloudtechnologies.hiring.service.WorkerService
 import ru.itmocloudtechnologies.hiring.validation.group.CreateGroup
+
 import javax.validation.ConstraintViolationException
 import javax.validation.constraints.Positive
 import javax.validation.constraints.PositiveOrZero
@@ -31,10 +34,11 @@ class WorkerController(
         @RequestParam(required = false) organizationType: OrganizationType?,
         @RequestParam(required = false) coordinatesX: Double?,
         @RequestParam(required = false) coordinatesY: Double?,
-        @RequestParam(required = false) sortedColumn: String?,
+        @RequestParam(required = false, defaultValue = "ASC") sortDirection: String,
+        @RequestParam(required = false, defaultValue = "id") sortedColumn: String,
         @RequestParam(required = false, defaultValue = 0.toString()) @PositiveOrZero pageNum: Int,
         @RequestParam(required = false, defaultValue = 5.toString()) @Positive pageSize: Int
-    ): List<Worker> {
+    ): Page<Worker> {
         val filter = FilterWorkersRequest(
             name,
             coordinatesX,
@@ -43,6 +47,7 @@ class WorkerController(
             position,
             status,
             organizationType,
+            sortDirection,
             sortedColumn,
             pageNum,
             pageSize

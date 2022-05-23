@@ -1,24 +1,48 @@
-import { WorkerPerson } from '@/types'
+import { WorkerPage, WorkerPerson } from '@/types'
 import { createStore } from 'vuex'
 
 export default createStore({
   state: {
     workers: [] as Array<WorkerPerson>,
-    url: 'http://labvm-42-12.itmo-lab.cosm-lab.science:8080/workers'
+    url: 'http://labvm-42-12.itmo-lab.cosm-lab.science:8080/workers',
+    pages: 0,
+    limit: 5,
+    page: 0,
+    workersCount: 0,
+    counter: 1
   },
   getters: {
     workers: ( state ) => {
       return state.workers
     },
-  },
-  mutations: {
-    updateWorkersList( state, workers: Array<WorkerPerson> ) {
-      state.workers = workers
+    page: ( state ) => {
+      return state.page
+    },
+    pages: ( state ) => {
+      return state.pages
+    },
+    workersCount: ( state ) => {
+      return state.workersCount
     },
   },
+  mutations: {
+    updateWorkersList( state, workers: WorkerPage ) {
+      state.counter = 0
+      workers.content.map( ( item ) => {
+        item.index = ( state.page * state.limit + state.counter + 1 )
+        state.counter++
+      })
+      state.workers = workers.content
+      state.pages = workers.totalPages
+      state.workersCount = workers.totalElements
+    },
+    updatePageNum( state, pageNum: number ) {
+      state.page = pageNum
+    }
+  },
   actions: {
-    async getWorkers( state, url: string ) {
-      const response = await fetch( this.state.url )
+    async getWorkers( state, pageNum: number ) {
+      const response = await fetch( this.state.url + `/?page=${this.state.page}` )
       const result = await response.json()
       this.commit( 'updateWorkersList', result )
     },
@@ -45,6 +69,9 @@ export default createStore({
           'accept': '*/*'
         }
       })
+    },
+    updatePage( state, pageNum: number ) {
+      this.commit( 'updatePageNum', pageNum )
     },
   },
   modules: {},

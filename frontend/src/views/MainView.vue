@@ -14,12 +14,12 @@
       TableItem(
         :columns="tableColumns"
         :rows="workers"
-        :hasNumeration="true"
         :selectedRowId="selectedWorkerId"
         @rowClick="selectWorker"
         @editRow="editWorker"
         @deleteRow="deleteWorker"
       )
+      PaginationPanel
     WorkerItem(
       v-if="hasAddingMode"
       :workerLabel="workerLabel"
@@ -34,6 +34,7 @@
 import TableItem from '@/components/TableItem.vue'
 import ButtonItem from '@/components/ButtonItem.vue'
 import WorkerItem from '@/components/WorkerItem.vue'
+import PaginationPanel from '@/components/PaginationPanel.vue'
 import { computed, ref } from 'vue'
 import store from '@/store'
 

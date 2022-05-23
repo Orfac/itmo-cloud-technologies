@@ -1,5 +1,9 @@
 package ru.itmocloudtechnologies.hiring.controller
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -14,9 +18,22 @@ import javax.validation.ConstraintViolationException
 class WorkerController(
     val workerService: WorkerService
 ) {
-
-    @GetMapping
-    fun getAllWorkers(): List<Worker> = workerService.findAll()
+    @GetMapping()
+    fun getAllWorkersF(
+        @RequestParam(defaultValue = 0.toString()) page: Int,
+        @RequestParam(defaultValue = 5.toString()) size: Int,
+        @RequestParam(defaultValue = "ASC") order: String,
+        @RequestParam(defaultValue = "id") sortValue: String,
+        // TODO Здесь должны быть не name а любые значения
+        @RequestParam(required = false) name : String?
+    ): Page<Worker> {
+        val sort = Sort.by(Sort.Order(Sort.Direction.valueOf(order), sortValue))
+        val pageable = PageRequest.of(page, size, sort)
+        if (name == null){
+            return workerService.findAllPageable(pageable)
+        }
+        return workerService.findAllWithFilter("name", name, pageable)
+    }
 
     @GetMapping("/{id}")
     fun getById(@PathVariable id: Int): ResponseEntity<Worker> =

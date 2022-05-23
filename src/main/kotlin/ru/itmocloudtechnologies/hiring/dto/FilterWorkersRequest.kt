@@ -14,6 +14,6 @@ data class FilterWorkersRequest(
     val organizationType: OrganizationType?,
     val sortedDirection: String = "ASC",
     val sortedColumn: String = "id",
-    var pageNum: Int = 0,
+    var page: Int = 0,
     var pageSize: Int = 5
 )

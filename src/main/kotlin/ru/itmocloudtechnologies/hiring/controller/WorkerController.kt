@@ -36,7 +36,7 @@ class WorkerController(
         @RequestParam(required = false) coordinatesY: Double?,
         @RequestParam(required = false, defaultValue = "ASC") sortDirection: String,
         @RequestParam(required = false, defaultValue = "id") sortedColumn: String,
-        @RequestParam(required = false, defaultValue = 0.toString()) @PositiveOrZero pageNum: Int,
+        @RequestParam(required = false, defaultValue = 0.toString()) @PositiveOrZero page: Int,
         @RequestParam(required = false, defaultValue = 5.toString()) @Positive pageSize: Int
     ): Page<Worker> {
         val filter = FilterWorkersRequest(
@@ -49,7 +49,7 @@ class WorkerController(
             organizationType,
             sortDirection,
             sortedColumn,
-            pageNum,
+            page,
             pageSize
         )
         return workerService.findAll(filter)

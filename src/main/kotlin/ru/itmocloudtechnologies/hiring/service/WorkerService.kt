@@ -106,10 +106,10 @@ class WorkerService(
 
         val query = entityManager.createQuery(cq)
         val maxCount = query.resultList.size
-        val pageable = PageRequest.of(filter.pageNum, filter.pageSize)
+        val pageable = PageRequest.of(filter.page, filter.pageSize)
 
         query.maxResults = filter.pageSize
-        query.firstResult = filter.pageNum * filter.pageSize
+        query.firstResult = filter.page * filter.pageSize
 
         return PageImpl(query.resultList, pageable, maxCount.toLong())
     }

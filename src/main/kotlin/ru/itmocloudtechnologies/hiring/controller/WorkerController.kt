@@ -1,45 +1,77 @@
 package ru.itmocloudtechnologies.hiring.controller
 
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
-
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import ru.itmocloudtechnologies.hiring.dto.FilterWorkersRequest
+import ru.itmocloudtechnologies.hiring.model.OrganizationType
+import ru.itmocloudtechnologies.hiring.model.Position
+import ru.itmocloudtechnologies.hiring.model.Status
 import ru.itmocloudtechnologies.hiring.model.Worker
 import ru.itmocloudtechnologies.hiring.service.WorkerService
 import ru.itmocloudtechnologies.hiring.validation.group.CreateGroup
 import javax.validation.ConstraintViolationException
+import javax.validation.constraints.Positive
+import javax.validation.constraints.PositiveOrZero
 
 @RestController
 @RequestMapping("workers")
+@Validated
 class WorkerController(
-    val workerService: WorkerService
+    private val workerService: WorkerService
 ) {
-    @GetMapping()
-    fun getAllWorkersF(
-        @RequestParam(defaultValue = 0.toString()) page: Int,
-        @RequestParam(defaultValue = 5.toString()) size: Int,
-        @RequestParam(defaultValue = "ASC") order: String,
-        @RequestParam(defaultValue = "id") sortValue: String,
-        // TODO Здесь должны быть не name а любые значения
-        @RequestParam(required = false) name : String?
-    ): Page<Worker> {
-        val sort = Sort.by(Sort.Order(Sort.Direction.valueOf(order), sortValue))
-        val pageable = PageRequest.of(page, size, sort)
-        if (name == null){
-            return workerService.findAllPageable(pageable)
-        }
-        return workerService.findAllWithFilter("name", name, pageable)
+
+    @GetMapping
+    fun getAllWorkers(
+        @RequestParam(required = false) name: String?,
+        @RequestParam(required = false) salary: Float?,
+        @RequestParam(required = false) position: Position?,
+        @RequestParam(required = false) status: Status?,
+        @RequestParam(required = false) organizationType: OrganizationType?,
+        @RequestParam(required = false) coordinatesX: Double?,
+        @RequestParam(required = false) coordinatesY: Double?,
+        @RequestParam(required = false) sortedColumn: String?,
+        @RequestParam(required = false, defaultValue = 0.toString()) @PositiveOrZero pageNum: Int,
+        @RequestParam(required = false, defaultValue = 5.toString()) @Positive pageSize: Int
+    ): List<Worker> {
+        val filter = FilterWorkersRequest(
+            name,
+            coordinatesX,
+            coordinatesY,
+            salary,
+            position,
+            status,
+            organizationType,
+            sortedColumn,
+            pageNum,
+            pageSize
+        )
+        return workerService.findAll(filter)
     }
+
+    @GetMapping("/lessThan")
+    fun getLessThanSalary(
+        @RequestParam salary: Float
+    ): List<Worker> = workerService.getLessThanSalary(salary)
+
+    @GetMapping("/withSmallestStatus")
+    fun getWithSmallestStatus(): ResponseEntity<Worker> =
+        workerService
+            .getWithSmallestStatus()
+            .map { ResponseEntity.ok(it) }
+            .orElse(ResponseEntity.notFound().build())
 
     @GetMapping("/{id}")
     fun getById(@PathVariable id: Int): ResponseEntity<Worker> =
         workerService.findById(id)
             .map { ResponseEntity.ok(it) }
             .orElse(ResponseEntity.notFound().build())
+
+    @DeleteMapping
+    fun deleteMany(
+        @RequestParam salary: Float
+    ): Long = workerService.deleteBySalary(salary)
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

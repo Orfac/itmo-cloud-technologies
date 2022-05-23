@@ -17,10 +17,10 @@ const props = defineProps({
 
 <style lang="sass" scoped>
 .button-item
-  margin-top: 10px
+  margin: 10px 0px
   padding: 10px 15px
   border: none
-  border-radius: 4px
+  border-radius: 3px
   background-color: #89c2c5
   color: #000000
   cursor: pointer

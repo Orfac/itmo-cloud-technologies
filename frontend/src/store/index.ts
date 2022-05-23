@@ -26,7 +26,26 @@ export default createStore({
       const response = await fetch( this.state.url + '/' + id, {
         method: 'DELETE',
       })
-    }
+    },
+    async addWorker( state, body: any ) {
+      const response = await fetch( this.state.url, {
+        method: 'POST',
+        body: JSON.stringify( body ),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+    },
+    async editWorker( state, body: any ) {
+      const response = await fetch( this.state.url + '/' + body.id, {
+        method: 'PUT',
+        body: JSON.stringify( body ),
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': '*/*'
+        }
+      })
+    },
   },
   modules: {},
 })

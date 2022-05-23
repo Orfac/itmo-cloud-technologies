@@ -1,6 +1,6 @@
 <template lang="pug">
 .app 
-    .app__title( @click="test" ) Облачная разработка. Команда 4
+    .app__title Облачная разработка. Команда 4
     MainView
 </template>
 

@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.27.2",
     "core-js": "^3.8.3",
+    "lodash": "^4.17.21",
     "pug-plain-loader": "^1.1.0",
     "register-service-worker": "^1.7.2",
     "vue": "^3.2.13",

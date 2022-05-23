@@ -44,10 +44,6 @@ const props = defineProps({
   }
 })
 
-console.log( props.name )
-console.log( props.selectValue )
-console.log( props.options )
-
 </script>
 
 <style lang="sass" scoped>

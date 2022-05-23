@@ -109,7 +109,6 @@ if ( props.isEditing ) {
 }
 
 const closeWorkerItem = () => {
-  console.log( inputs[0].value )
   emit( 'closeWorkerItem' )
 }
 
@@ -137,7 +136,6 @@ const updateWorkers = async () => {
     await store.dispatch( 'editWorker', body )
   } else await store.dispatch( 'addWorker', body )
   await store.dispatch( 'getWorkers' )
-  console.log( body )
   emit( 'closeWorkerItem' )
 }
 

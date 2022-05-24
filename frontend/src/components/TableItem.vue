@@ -17,8 +17,9 @@ h4.label( v-if="label" ) {{ label + ' ' }}
             FilterItem(
               v-if="column.filtered"
               :keyWord="column.id"
-              :values="rows"
+              :values="column.filteredValues"
               v-model:filteredRows="filteredValues"
+              @updateFilteredValue="updateFilter"
               )
       tbody.table__body
         tr.table-row(
@@ -55,7 +56,7 @@ h4.label( v-if="label" ) {{ label + ' ' }}
 
 <script setup lang="ts">
 import FilterItem from '@/components/FilterItem.vue'
-import { defineProps, computed, defineEmits, ref } from 'vue'
+import { defineProps, computed, defineEmits, ref, watch } from 'vue'
 
 const emit = defineEmits([ 'rowClick', 'sortRows', 'deleteRow', 'editRow', 'searchItem', 'repairRow' ])
 
@@ -143,18 +144,21 @@ const repairRow = ( id: number ) => {
   emit( 'repairRow', id )
 }
 
-const filteredValues = ref([])
+const filteredValues = ref([''])
+
+const updateFilter = ( value: string ) => {
+  filteredValues.value.push( value )
+  console.log( filteredValues.value )
+}
 
 const filterRows = ( rows: Array<any> ) => {
-  if ( filteredValues.value.length ) {
-    let finalRows: any = []
-    for ( const val of filteredValues.value ) {
-      finalRows = finalRows.concat( rows.filter( ( item ) => item[props.columns[props.filteredRow].id] === val ) )
-    }
-    return finalRows
-  }
-  else return rows
+  return rows
 }
+
+watch( () => filteredValues.value, () => {
+  console.log( filteredValues.value )
+})
+
 
 const realRows = computed( () => {
   let displayedRows = []

@@ -5,19 +5,21 @@ Popper
     .filter-item
       .filter-item__element( v-for="value, idx in displayedValues" )
         input.filter-item__checkbox.custom-checkbox(
-          :id="idx"
-          type="checkbox"
+          :id="value"
+          type="radio"
           v-model="filteredRows"
           :value="value"
-          @change="changeFilter($event.target.value)"
+          @change="changeFilter"
           ) 
-        label.filter-item__value( :for="idx" ) {{ value }}
+        label.filter-item__value( :for="value" ) {{ value }}
 </template>
 
 <script setup lang="ts">
 import { computed, defineProps, defineEmits } from 'vue'
+import Popper from 'vue3-popper'
+import store from '@/store'
 
-const emit = defineEmits([ 'update:filteredRows' ])
+const emit = defineEmits([ 'updateFilteredValue' ])
 
 const props = defineProps({
   keyWord: {
@@ -37,10 +39,18 @@ const props = defineProps({
   }
 })
 
-const displayedValues = computed( () => new Set( props.values.map( ( item: any ) => item[props.keyWord]) ) )
+const displayedValues = computed( () => props.values.slice( 1 ) )
 
 const changeFilter = ( value: string ) => {
-  emit( 'update:filteredRows', props.filteredRows )
+  if ( props.values[0] === 'position' ) {
+    store.dispatch( 'updatePositionFilter', props.filteredRows )
+  } else if ( props.values[0] === 'status' ) {
+    store.dispatch( 'updateStatusFilter', props.filteredRows )
+  } else {
+    store.dispatch( 'updateOrganizationFilter', props.filteredRows )
+  }
+  console.log( props.filteredRows )
+  emit( 'updateFilteredValue', props.filteredRows )
 }
 
 </script>
@@ -57,6 +67,7 @@ const changeFilter = ( value: string ) => {
   box-shadow: 0px 0px 12px rgba(0,0,0,.12)
   &__element
     display: flex
+    align-items: baseline
     min-height: 25px
   &__value
     cursor: pointer

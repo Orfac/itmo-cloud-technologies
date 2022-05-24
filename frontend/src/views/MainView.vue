@@ -50,6 +50,7 @@
             @click="getWorkerWithMaxStatus"
           )
       ButtonItem(
+          v-if="!hasPagination"
           label="Найти"
           name="Найти всех сотрудников"
           @click="getWorkers"

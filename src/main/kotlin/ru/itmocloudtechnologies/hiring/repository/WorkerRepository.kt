@@ -10,6 +10,6 @@ interface WorkerRepository : JpaRepository<Worker, Int> {
 
     fun deleteBySalary(salary: Float): Long
     fun findAllBySalaryLessThan(salary: Float): List<Worker>
-    fun findFirstByOrderByStatus(): Optional<Worker>
+    fun findFirstByOrderByStatusDesc(): Optional<Worker>
 
 }

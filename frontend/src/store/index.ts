@@ -107,7 +107,7 @@ export default createStore({
       this.commit( 'updateOrgFilter', filterValue )
     },
     async getStatusWorker( state ) {
-      const response = await fetch( this.state.url + '/withSmallestStatus' )
+      const response = await fetch( this.state.url + '/withBiggestStatus' )
       const result = await response.json()
       this.commit( 'updateWorker', result )
     },

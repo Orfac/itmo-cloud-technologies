@@ -33,6 +33,7 @@ data class Worker(
 
     @field:NotNull(groups = [CreateGroup::class])
     @Column(nullable = false)
+    // TODO добавить валидатор нормальный
     var status: Status?,
 
     @field:NotNull(groups = [CreateGroup::class])

@@ -60,7 +60,6 @@ export default createStore({
   },
   actions: {
     async getWorkers( state, parameters ) {
-      console.log( 'pageNum', this.state.page )
       const pageParams = {
         page: this.state.page,
         pageSize: this.state.pageSize
@@ -68,10 +67,8 @@ export default createStore({
       const params = {
         params: Object.assign( pageParams, parameters )
       }
-      console.log( 'pageParams', pageParams )
       const response = await axios.get( this.state.url, params )
       const result = await response.data
-      console.log( result )
       this.commit( 'updateWorkersBody', result )
     },
     async deleteWorker( state, id: number ) {

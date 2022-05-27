@@ -140,7 +140,6 @@ const repairRow = ( id: number ) => {
 const filteredValues = ref([''])
 
 const updateFilter = ( params: string ) => {
-  console.log( params )
   emit( 'filterRow', params )
 }
 
@@ -151,10 +150,6 @@ const cleanTableFilter = ( key: string ) => {
 const filterRows = ( rows: Array<any> ) => {
   return rows
 }
-
-watch( () => filteredValues.value, () => {
-  console.log( 'меняется', filteredValues.value )
-})
 
 const realRows = computed( () => {
   let displayedRows = []

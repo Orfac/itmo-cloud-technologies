@@ -33,7 +33,6 @@
           :class="{disabled: isDisabled}"
           @click="getWorkers"
         )
-        .warning тест
       TableItem(
         :columns="tableColumns"
         :rows="workers"
@@ -157,12 +156,12 @@ watch( () => parameters[1].value, ( val ) => {
   if ( !params.salary ) delete params.salary
 })
 watch( () => parameters[2].value, ( val ) => {
-  params.CoordinatesX = val
-  if ( !params.CoordinatesX.length ) delete params.CoordinatesX
+  params.coordinatesX = val
+  if ( !val.length ) delete params.сoordinatesX
 })
 watch( () => parameters[3].value, ( val ) => {
-  params.CoordinatesY = val
-  if ( !params.CoordinatesY.length ) delete params.CoordinatesY
+  params.coordinatesY = val
+  if ( !val.length ) delete params.сoordinatesY
 })
 
 const isDisabled = computed( () => {
@@ -180,7 +179,7 @@ const getWorkers = async () => {
 const workersAbsence = computed( () => hasWorkers.value && !workers.value.length )
 
 const getPaginateWorkers = async () => {
-  parameters[4].value = store.getters.page + 1
+  parameters[4].value = ( store.getters.page + 1 ).toString()
   await store.dispatch( 'getWorkers', params )
 }
 
@@ -323,7 +322,6 @@ const filterWorkers = ( filterParams: any ) => {
 }
 
 const cleanWorkersFilter = async ( key: string ) => {
-  console.log( filteredParams )
   await delete filteredParams[key]
   const lastParams = Object.assign( filteredParams, params )
   await store.dispatch( 'getWorkers', lastParams )

@@ -48,7 +48,7 @@ class WorkerService(
         filter.salary?.let {
             predicates.add(
                 cb.equal(
-                    root.get<Float>("salary"), it
+                    root.get<Float>("salary").`as`(String::class.java), it.toString()
                 )
             )
         }
@@ -80,7 +80,9 @@ class WorkerService(
         filter.coordinatesX?.let {
             predicates.add(
                 cb.equal(
-                    root.get<Coordinates>("coordinates").get<Double>("x"), it
+                    root.get<Coordinates>("coordinates")
+                        .get<Double>("x")
+                        .`as`(String::class.java), it.toString()
                 )
             )
         }
@@ -88,7 +90,9 @@ class WorkerService(
         filter.coordinatesY?.let {
             predicates.add(
                 cb.equal(
-                    root.get<Coordinates>("coordinates").get<Double>("y"), it
+                    root.get<Coordinates>("coordinates")
+                        .get<Double>("y")
+                        .`as`(String::class.java), it.toString()
                 )
             )
         }

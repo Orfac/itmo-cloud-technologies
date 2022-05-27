@@ -35,7 +35,7 @@ class InitialWorkersUploader(workerService: WorkerService) {
             coordinates = randomCoordinates(),
             organizationType = OrganizationType.values().random(),
             position = Position.values().random(),
-            salary = random.nextFloat() * 100
+            salary = random.nextFloat() * 100_000
         )
     }
 

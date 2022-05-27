@@ -22,7 +22,7 @@ class InitialWorkersUploader(workerService: WorkerService) {
 
 
         logger.info("Random data is started to uploading")
-        for (i in 0..100){
+        for (i in 0..100) {
             workerService.save(getRandomWorker())
         }
         logger.info("Random data is uploaded")
@@ -32,10 +32,17 @@ class InitialWorkersUploader(workerService: WorkerService) {
         return Worker(
             name = randomName(),
             status = Status.values().random(),
-            coordinates = Coordinates(random.nextDouble().toBigDecimal(), random.nextDouble()),
+            coordinates = randomCoordinates(),
             organizationType = OrganizationType.values().random(),
             position = Position.values().random(),
-            salary = random.nextFloat()
+            salary = random.nextFloat() * 100
+        )
+    }
+
+    private fun randomCoordinates(): Coordinates {
+        return Coordinates(
+            (random.nextDouble() * 5).toBigDecimal(),
+            random.nextDouble() * 5
         )
     }
 

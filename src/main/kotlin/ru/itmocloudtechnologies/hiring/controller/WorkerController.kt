@@ -21,7 +21,7 @@ import javax.validation.constraints.PositiveOrZero
 @RestController
 @RequestMapping("workers")
 @Validated
-class WorkerController(
+open class WorkerController(
     private val workerService: WorkerService
 ) {
 

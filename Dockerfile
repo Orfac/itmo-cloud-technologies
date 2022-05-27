@@ -1,4 +1,6 @@
-FROM openjdk:17-alpine
-VOLUME /tmp
-COPY build/libs/*SNAPSHOT.jar app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+FROM tomcat:10-jdk17-openjdk
+
+#COPY out/artifacts/build_war/build_war.war /usr/local/tomcat/webapps/
+COPY build/libs/hiring-0.0.1-SNAPSHOT-plain.war /usr/local/tomcat/webapps/app.war
+EXPOSE 8080
+CMD ["catalina.sh", "run"]

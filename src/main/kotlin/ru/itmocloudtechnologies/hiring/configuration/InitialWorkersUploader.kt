@@ -8,7 +8,7 @@ import ru.itmocloudtechnologies.hiring.service.WorkerService
 import kotlin.random.Random
 
 @Configuration
-class InitialWorkersUploader(workerService: WorkerService) {
+open class InitialWorkersUploader(workerService: WorkerService) {
     companion object {
         private const val SEED = 12345
         val random = Random(SEED)

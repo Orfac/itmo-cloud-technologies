@@ -15,7 +15,7 @@ import javax.persistence.EntityManager
 import javax.persistence.criteria.Predicate
 
 @Service
-class WorkerService(
+open class WorkerService(
     private val workerRepository: WorkerRepository,
     private val entityManager: EntityManager
 ) {
@@ -26,7 +26,7 @@ class WorkerService(
     fun getWithSmallestStatus(): Optional<Worker> = workerRepository.findFirstByOrderByStatusDesc()
 
     @Transactional(readOnly = true)
-    fun findAll(
+    open fun findAll(
         filter: FilterWorkersRequest
     ): Page<Worker> {
         val cb = entityManager.criteriaBuilder
@@ -120,7 +120,7 @@ class WorkerService(
     }
 
     @Transactional
-    fun deleteBySalary(salary: Float): Long {
+    open fun deleteBySalary(salary: Float): Long {
         return workerRepository.deleteBySalary(salary)
     }
 

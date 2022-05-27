@@ -3,8 +3,8 @@ package ru.itmocloudtechnologies.hiring.service
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import ru.itmocloudtechnologies.hiring.dto.FilterWorkersRequest
 import ru.itmocloudtechnologies.hiring.model.Coordinates
 import ru.itmocloudtechnologies.hiring.model.Position
@@ -23,8 +23,9 @@ class WorkerService(
     fun getLessThanSalary(salary: Float): List<Worker> =
         workerRepository.findAllBySalaryLessThan(salary)
 
-    fun getWithSmallestStatus(): Optional<Worker> = workerRepository.findFirstByOrderByStatus()
+    fun getWithSmallestStatus(): Optional<Worker> = workerRepository.findFirstByOrderByStatusDesc()
 
+    @Transactional(readOnly = true)
     fun findAll(
         filter: FilterWorkersRequest
     ): Page<Worker> {
@@ -114,6 +115,7 @@ class WorkerService(
         return PageImpl(query.resultList, pageable, maxCount.toLong())
     }
 
+    @Transactional
     fun deleteBySalary(salary: Float): Long {
         return workerRepository.deleteBySalary(salary)
     }

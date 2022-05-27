@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull
 @Embeddable
 data class Coordinates(
     @field:NotNull(groups = [CreateGroup::class])
-    @field:DecimalMax("408.0")
+    @field:DecimalMax("508.0")
     var x: BigDecimal?,
 
     @field:NotNull(groups = [])

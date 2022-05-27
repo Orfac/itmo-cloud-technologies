@@ -60,7 +60,7 @@ class WorkerController(
         @RequestParam salary: Float
     ): List<Worker> = workerService.getLessThanSalary(salary)
 
-    @GetMapping("/withSmallestStatus")
+    @GetMapping("/withBiggestStatus")
     fun getWithSmallestStatus(): ResponseEntity<Worker> =
         workerService
             .getWithSmallestStatus()

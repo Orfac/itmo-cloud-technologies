@@ -2,11 +2,12 @@
 .worker-item
     .worker-item__headers
       h3.worker-item__header {{ workerLabel }}
-      .worker-item__warning( v-if="hasWarning" ) Заполните все поля и попробуйте еще раз
+      .warning( v-if="hasWarning" ) Заполните все поля и попробуйте еще раз
     .worker-item__content
       form.worker-item__inputs(
         v-for="input, idx in inputs"
         :key="idx"
+        @submit="updateWorkers"
         )
         InputItem(
           v-model:inputValue="input.value"
@@ -26,6 +27,7 @@
         )
       .worker-item__buttons
         ButtonItem.worker-item__button(
+          :class="{ disabled: hasDisable }"
           :label="workerButtonLabel"
           @click="updateWorkers"
           )
@@ -102,7 +104,7 @@ const selects = reactive([
 
 if ( props.isEditing ) {
   inputs[0].value = workers.value[workers.value.findIndex( ( item: any ) => item.id === props.editingId )].name
-  inputs[1].value = workers.value[workers.value.findIndex( ( item: any ) => item.id === props.editingId )].salary
+  inputs[1].value = workers.value[workers.value.findIndex( ( item: any ) => item.id === props.editingId )].salary.toString()
   selects[0].value = workers.value[workers.value.findIndex( ( item: any ) => item.id === props.editingId )].position
   selects[1].value = workers.value[workers.value.findIndex( ( item: any ) => item.id === props.editingId )].status
   selects[2].value = workers.value[workers.value.findIndex( ( item: any ) => item.id === props.editingId )].organizationType
@@ -112,8 +114,12 @@ const closeWorkerItem = () => {
   emit( 'closeWorkerItem' )
 }
 
+const hasDisable = computed( () => {
+  return hasWarning.value && ( +inputs[1].value < 0 || inputs[0].value === '' || inputs[1].value === '' )
+})
+
 const updateWorkers = async () => {
-  if ( inputs[0].value === '' || inputs[1].value === '' ) {
+  if ( inputs[0].value === '' || inputs[1].value === '' || +inputs[1].value < 0 ) {
     hasWarning.value = true
     return
   }
@@ -129,7 +135,6 @@ const updateWorkers = async () => {
     position: selects[0].value,
     status: selects[1].value,
     organizationType: selects[2].value,
-    creationDate: '2022-05-22',
   }
   if ( props.isEditing ) {
     body.id = props.editingId
@@ -151,6 +156,7 @@ const updateWorkers = async () => {
   z-index: 999999
   &__buttons
     margin-top: 10px
+    display: flex
   &__button
     margin-right: 10px
   &__warning

@@ -1,6 +1,4 @@
 <template lang="pug">
-h4.label( v-if="label" ) {{ label + ' ' }}
-  span.count {{ rows.length }}
 .table
   .table-item
     table.table-fixed-head
@@ -12,14 +10,16 @@ h4.label( v-if="label" ) {{ label + ' ' }}
             :style="{'max-width': column.maxWidth, 'width': column.width}"
             :class="{ helper: index === 0 }"
           ) 
-            .head( @click="sortRows(column.id, column.sorted, index)" )
+            .head( @click="sortRows(column.id, index)" )
               span {{ column.label }}
             FilterItem(
               v-if="column.filtered"
+              :key="counter"
               :keyWord="column.id"
               :values="column.filteredValues"
               v-model:filteredRows="filteredValues"
               @updateFilteredValue="updateFilter"
+              @cleanFilter="cleanTableFilter"
               )
       tbody.table__body
         tr.table-row(
@@ -31,14 +31,8 @@ h4.label( v-if="label" ) {{ label + ' ' }}
             v-for="(column, index) in columns"
             :key="index"
             :style="{'max-width': column.maxWidth, 'width': column.width, 'font-weight': column.fontWeight}"
-            :class="{ slotted: column.slot, expanded: expandedRows.includes( row.id ) }"
           )
-            span( v-if="!column.slot" ) {{ row[ column.id ] }}
-            .table-row__slot( v-else )
-              slot(
-                name="row"
-                :row="row"
-              )
+            span {{ row[ column.id ] }}
             .table-row__fixers(
               v-if="column.id === 'fixers'"
               :class="{ extracted: selectedRowId === row.id }"
@@ -58,7 +52,7 @@ h4.label( v-if="label" ) {{ label + ' ' }}
 import FilterItem from '@/components/FilterItem.vue'
 import { defineProps, computed, defineEmits, ref, watch } from 'vue'
 
-const emit = defineEmits([ 'rowClick', 'sortRows', 'deleteRow', 'editRow', 'searchItem', 'repairRow' ])
+const emit = defineEmits([ 'rowClick', 'sortRows', 'deleteRow', 'editRow', 'repairRow', 'filterRow', 'cleanTableFilter' ])
 
 const props = defineProps({
   rows: {
@@ -118,9 +112,8 @@ const props = defineProps({
   }
 })
 
-const hasSearcher = ref( false )
 const searchedRow = ref( 0 )
-
+const counter = ref( 0 )
 
 const hasMargin = computed( () =>  document.documentElement.clientHeight - +props.height.slice( 0, props.height.length - 2 ) < 33 * realRows.value.length )
 
@@ -146,19 +139,22 @@ const repairRow = ( id: number ) => {
 
 const filteredValues = ref([''])
 
-const updateFilter = ( value: string ) => {
-  filteredValues.value.push( value )
-  console.log( filteredValues.value )
+const updateFilter = ( params: string ) => {
+  console.log( params )
+  emit( 'filterRow', params )
 }
 
+const cleanTableFilter = ( key: string ) => {
+  counter.value++
+  emit( 'cleanTableFilter', key )
+}
 const filterRows = ( rows: Array<any> ) => {
   return rows
 }
 
 watch( () => filteredValues.value, () => {
-  console.log( filteredValues.value )
+  console.log( 'меняется', filteredValues.value )
 })
-
 
 const realRows = computed( () => {
   let displayedRows = []
@@ -197,19 +193,11 @@ const sortedRows = computed( () => {
 })
 
 const sortDirection = ref( 1 )
-const helpList = ref( realRows.value.slice( 0 ) )
 
-const sortRows = ( id: string, parameter: string, index: number ) => {
-  if ( !parameter ) return
+const sortRows = ( id: string, index: number ) => {
   sortedColumn.value = id
   sortDirection.value = - sortDirection.value
-  emit( 'sortRows', { parameter: parameter, index: index, direction: sortDirection.value })
-}
-
-const searchItem = ( index: number ) => {
-  hasSearcher.value = !hasSearcher.value
-  searchedRow.value = index
-  emit( 'searchItem', hasSearcher.value )
+  emit( 'sortRows', { index: index, direction: sortDirection.value })
 }
 
 </script>

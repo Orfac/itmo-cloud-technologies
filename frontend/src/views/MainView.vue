@@ -11,6 +11,29 @@
         :label="buttonLabel"
         @click="doSomethingWithPerson"   
       )
+      .main-view__params
+        .main-view__salary(
+          v-for="param, idx in parameters"
+          :key="idx"
+          )
+          InputItem(
+            v-model:inputValue="param.value"
+            :placeholder="param.placeholder"
+            :name="param.name"
+            :type="param.type"
+          )
+        ButtonItem(
+          label="Отчистить все"
+          name="Отчистить все возможные поля"
+          @click="cleanParams"
+        )
+        ButtonItem(
+          label="Поиск по параметрам"
+          name="Поиск"
+          :class="{disabled: isDisabled}"
+          @click="getWorkers"
+        )
+        .warning тест
       TableItem(
         :columns="tableColumns"
         :rows="workers"
@@ -18,12 +41,18 @@
         @rowClick="selectWorker"
         @editRow="editWorker"
         @deleteRow="deleteWorker"
+        @filterRow="filterWorkers"
+        @cleanTableFilter="cleanWorkersFilter"
       )
-      PaginationPanel( v-if="hasPagination" )
+      PaginationPanel(
+        v-if="hasPagination && !workersAbsence"
+        @getPagWorkers="getPaginateWorkers"
+        )
+      .warning( v-if="workersAbsence" ) По заданным параметрам работников не найдено
       .main-view__additional
         .main-view__salary
           InputItem(
-            v-model:inputValue="deleteRequestSalary"
+            v-model:inputValue="deletedRequestSalary"
             placeholder="Введите значение salary"
             name="Удалить все объекты, заданному salary"
             type="number"
@@ -53,7 +82,7 @@
           v-if="!hasPagination"
           label="Найти"
           name="Найти всех сотрудников"
-          @click="getWorkers"
+          @click="getAllWorkers"
         )
     WorkerItem(
       v-if="hasAddingMode"
@@ -69,18 +98,90 @@
 import TableItem from '@/components/TableItem.vue'
 import ButtonItem from '@/components/ButtonItem.vue'
 import InputItem from '@/components/InputItem.vue'
+import SelectItem from '@/components/SelectItem.vue'
 import WorkerItem from '@/components/WorkerItem.vue'
 import PaginationPanel from '@/components/PaginationPanel.vue'
-import { computed, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import store from '@/store'
 
 const hasWorkers = ref( false )
 const hasPagination = ref( true )
 
+const params = reactive({}) as any
+
+let parameters = reactive([
+  {
+    value: '',
+    placeholder: 'Введите name',
+    name: 'Поиск по name',
+    type: 'string',
+  },
+  {
+    value: '',
+    placeholder: 'Введите salary',
+    name: 'Поиск по salary',
+    type: 'number',
+  },
+  {
+    value: '',
+    placeholder: 'Введите Coordinate X',
+    name: 'Поиск по Coordinate X',
+    type: 'number',
+  },
+  {
+    value: '',
+    placeholder: 'Введите Coordinate Y',
+    name: 'Поиск по Coordinate Y',
+    type: 'number',
+  },
+  {
+    value: '1',
+    placeholder: 'Введите номер страницы',
+    name: 'Номер страницы',
+    type: 'number',
+  },
+  {
+    value: '5',
+    placeholder: 'Введите количество работников на странице',
+    name: 'Количество работников на странице',
+    type: 'number',
+  },
+])
+
+watch( () => parameters[0].value, ( val ) => {
+  params.name = val
+  if ( !params.name.length ) delete params.name
+})
+watch( () => parameters[1].value, ( val ) => {
+  params.salary = val
+  if ( !params.salary ) delete params.salary
+})
+watch( () => parameters[2].value, ( val ) => {
+  params.CoordinatesX = val
+  if ( !params.CoordinatesX.length ) delete params.CoordinatesX
+})
+watch( () => parameters[3].value, ( val ) => {
+  params.CoordinatesY = val
+  if ( !params.CoordinatesY.length ) delete params.CoordinatesY
+})
+
+const isDisabled = computed( () => {
+  return +parameters[1].value < 0 || +parameters[2].value > 509 || +parameters[2].value < 0 || +parameters[3].value < 0 || +parameters[4].value < 1 || +parameters[5].value < 1
+})
+
 const getWorkers = async () => {
-  await store.dispatch( 'getWorkers' )
+  await store.dispatch( 'updatePage', +parameters[4].value - 1 )
+  await store.dispatch( 'updatePageSize', parameters[5].value )
+  await store.dispatch( 'getWorkers', params )
   hasWorkers.value = true
   hasPagination.value = true
+}
+
+const workersAbsence = computed( () => hasWorkers.value && !workers.value.length )
+
+const getPaginateWorkers = async () => {
+  parameters[4].value = store.getters.page + 1
+  await store.dispatch( 'getWorkers', params )
 }
 
 const buttonLabel = computed( () => {
@@ -101,12 +202,22 @@ const tableColumns = [
   {
     label: 'Имя',
     id: 'name',
-    width: '15%'
+    width: '7%'
+  },
+  {
+    label: 'Координата Х',
+    id: 'coordinateX',
+    width: '8%',
+  },
+  {
+    label: 'Координата Y',
+    id: 'coordinateY',
+    width: '10%',
   },
   {
     label: 'Должность',
     id: 'position',
-    width: '15%',
+    width: '10%',
     filtered: 'true',
     filteredValues: [ 'position', 'DIRECTOR', 'MANAGER', 'LABORER', 'DEVELOPER', 'BAKER' ]
   },
@@ -132,7 +243,7 @@ const tableColumns = [
   {
     label: 'Дата создания',
     id: 'creationDate',
-    width: '13%'
+    width: '8%'
   },
   {
     label: '',
@@ -143,7 +254,7 @@ const tableColumns = [
 
 const deleteWorker = async ( id: number ) => {
   await store.dispatch( 'deleteWorker', id )
-  store.dispatch( 'getWorkers' )
+  store.dispatch( 'getWorkers', params )
 }
 
 const selectWorker = ( id: number ) => {
@@ -178,16 +289,46 @@ const getWorkerWithMaxStatus = async () => {
 }
 
 const getRequestSalary = ref( '' )
-const deleteRequestSalary = ref( '' )
+const deletedRequestSalary = ref( '' )
 
 const getSalaryWorkers = async () => {
+  if ( !getRequestSalary.value.length ) return
   await store.dispatch( 'getSalaryWorkers', getRequestSalary.value )
   hasPagination.value = false
 }
 const deleteSalaryWorkers = async () => {
-  await store.dispatch( 'deleteSalaryWorkers', deleteRequestSalary.value )
-  store.dispatch( 'getWorkers' )
+  if ( !deletedRequestSalary.value.length ) return
+  await store.dispatch( 'deleteSalaryWorkers', deletedRequestSalary.value )
+  store.dispatch( 'getWorkers', params )
 }
+
+const getAllWorkers = async () => {
+  parameters[4].value = '1'
+  store.dispatch( 'getWorkers', {})
+  hasPagination.value = true
+}
+
+const cleanParams = () => {
+  for ( const [ idx, param ] of parameters.entries() ) {
+    idx > 3 ? 0 : param.value = ''
+  }
+}
+
+const filteredParams = reactive({}) as any
+
+const filterWorkers = ( filterParams: any ) => {
+  filteredParams[filterParams.key] = filterParams.value
+  const lastParams = Object.assign( filteredParams, params )
+  store.dispatch( 'getWorkers', lastParams )
+}
+
+const cleanWorkersFilter = async ( key: string ) => {
+  console.log( filteredParams )
+  await delete filteredParams[key]
+  const lastParams = Object.assign( filteredParams, params )
+  await store.dispatch( 'getWorkers', lastParams )
+}
+
 </script>
 
 <style lang="sass">
@@ -206,6 +347,10 @@ const deleteSalaryWorkers = async () => {
     width: 80%
     display: flex
     justify-content: space-between
+  &__params
+    display: grid
+    grid-template-columns: 1fr 1fr 1fr 1fr
+    gap: 20px
 
 .fake
   position: absolute

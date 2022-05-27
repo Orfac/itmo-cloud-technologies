@@ -13,8 +13,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineEmits } from 'vue'
 import store from '@/store'
+
+const emit = defineEmits([ 'getPagWorkers' ])
 
 const page = computed( () => store.getters.page )
 const pages = computed( () => store.getters.pages )
@@ -25,7 +27,7 @@ const toPrevPage = async () => {
     return
   } else {
     await store.dispatch( 'updatePage', page.value - 1 )
-    await store.dispatch( 'getWorkers', page.value - 1 )
+    emit( 'getPagWorkers' )
   }
 }
 
@@ -34,7 +36,7 @@ const toNextPage = async () => {
     return
   } else {
     await store.dispatch( 'updatePage', page.value + 1 )
-    await store.dispatch( 'getWorkers', page.value + 1 )
+    emit( 'getPagWorkers' )
   } 
 }
 

@@ -3,6 +3,7 @@ Popper
   img.filter( src="@/assets/icons/controls/filter.svg" )
   template( #content )
     .filter-item
+      button( @click="cleanFilter" ) Отчистить
       .filter-item__element( v-for="value, idx in displayedValues" )
         input.filter-item__checkbox.custom-checkbox(
           :id="value"
@@ -19,7 +20,7 @@ import { computed, defineProps, defineEmits } from 'vue'
 import Popper from 'vue3-popper'
 import store from '@/store'
 
-const emit = defineEmits([ 'updateFilteredValue' ])
+const emit = defineEmits([ 'updateFilteredValue', 'cleanFilter' ])
 
 const props = defineProps({
   keyWord: {
@@ -42,15 +43,12 @@ const props = defineProps({
 const displayedValues = computed( () => props.values.slice( 1 ) )
 
 const changeFilter = ( value: string ) => {
-  if ( props.values[0] === 'position' ) {
-    store.dispatch( 'updatePositionFilter', props.filteredRows )
-  } else if ( props.values[0] === 'status' ) {
-    store.dispatch( 'updateStatusFilter', props.filteredRows )
-  } else {
-    store.dispatch( 'updateOrganizationFilter', props.filteredRows )
-  }
-  console.log( props.filteredRows )
-  emit( 'updateFilteredValue', props.filteredRows )
+  const parameters = { value: props.filteredRows, key: props.values[0] }
+  emit( 'updateFilteredValue', parameters )
+}
+
+const cleanFilter = () => {
+  emit( 'cleanFilter', props.values[0])
 }
 
 </script>

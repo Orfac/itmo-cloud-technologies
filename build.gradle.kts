@@ -22,7 +22,6 @@ dependencies {
     // VALIDATION
     implementation("org.apache.tomcat.embed:tomcat-embed-el:9.0.62")
     implementation("org.hibernate.validator:hibernate-validator:6.2.3.Final")
-    implementation("org.apache.tomcat.embed:tomcat-embed-el:9.0.62")
     implementation("jakarta.annotation:jakarta.annotation-api:1.3.5")
     implementation("org.yaml:snakeyaml:1.29")
     implementation("org.springframework:spring-core:5.3.19")
@@ -62,6 +61,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
+    compileOnly("javax.servlet:javax.servlet-api:3.1.0")
 }
 
 tasks.withType<KotlinCompile> {

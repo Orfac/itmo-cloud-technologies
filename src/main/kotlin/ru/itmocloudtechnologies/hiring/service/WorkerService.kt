@@ -1,5 +1,6 @@
 package ru.itmocloudtechnologies.hiring.service
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -17,8 +18,10 @@ import javax.persistence.criteria.Predicate
 @Service
 open class WorkerService(
     private val workerRepository: WorkerRepository,
-    private val entityManager: EntityManager
+
 ) {
+    @Autowired
+    lateinit var  entityManager: EntityManager
 
     fun getLessThanSalary(salary: Float): List<Worker> =
         workerRepository.findAllBySalaryLessThan(salary)

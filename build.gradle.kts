@@ -3,6 +3,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.6.21"
     id("war")
+
+    id("org.jetbrains.kotlin.plugin.noarg") version "1.6.21"
+    id("org.jetbrains.kotlin.plugin.jpa") version "1.6.21"
 }
 
 group = "ru.itmo-cloud-technologies"
@@ -17,7 +20,7 @@ repositories {
 
 
 dependencies {
-    implementation("org.postgresql:postgresql:42.2.23")
+    implementation("org.postgresql:postgresql:42.3.4")
 
     // VALIDATION
     implementation("org.apache.tomcat.embed:tomcat-embed-el:9.0.62")
@@ -29,7 +32,7 @@ dependencies {
     // DATA
     implementation("jakarta.persistence:jakarta.persistence-api:2.2.3")
     implementation("jakarta.transaction:jakarta.transaction-api:1.3.3")
-    implementation("org.hibernate:hibernate-core:5.6.8.Final")
+    implementation("org.hibernate:hibernate-core:5.4.2.Final")
     implementation("org.springframework:spring-aspects:5.3.19")
     implementation("org.aspectj:aspectjweaver:1.9.7")
     implementation("org.springframework:spring-aop:5.3.19")
@@ -67,7 +70,7 @@ dependencies {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "17"
+        jvmTarget = "11"
     }
 }
 

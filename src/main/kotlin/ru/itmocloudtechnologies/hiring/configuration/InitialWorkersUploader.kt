@@ -2,20 +2,25 @@ package ru.itmocloudtechnologies.hiring.configuration
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
+import org.springframework.stereotype.Service
 import ru.itmocloudtechnologies.hiring.model.*
 import ru.itmocloudtechnologies.hiring.service.WorkerService
 import kotlin.random.Random
 
-@Configuration
-open class InitialWorkersUploader(workerService: WorkerService) {
+@Service
+open class InitialWorkersUploader {
+    @Autowired
+    lateinit var workerService: WorkerService
+
     companion object {
         private const val SEED = 12345
         val random = Random(SEED)
         val logger: Logger = LoggerFactory.getLogger(InitialWorkersUploader::class.java)
     }
 
-    init {
+    fun upload() {
         logger.info("Clearing existing data")
         workerService.deleteAll()
         logger.info("Clearing of existing data is finished")

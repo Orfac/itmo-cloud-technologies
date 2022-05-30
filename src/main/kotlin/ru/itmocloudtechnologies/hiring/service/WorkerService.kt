@@ -13,15 +13,17 @@ import ru.itmocloudtechnologies.hiring.model.Worker
 import ru.itmocloudtechnologies.hiring.repository.WorkerRepository
 import java.util.*
 import javax.persistence.EntityManager
+import javax.persistence.EntityManagerFactory
 import javax.persistence.criteria.Predicate
 
 @Service
-open class WorkerService(
-    private val workerRepository: WorkerRepository,
+open class WorkerService{
 
-) {
     @Autowired
-    lateinit var  entityManager: EntityManager
+    lateinit var workerRepository: WorkerRepository
+
+    @Autowired
+    lateinit var  entityManagerFactory: EntityManagerFactory
 
     fun getLessThanSalary(salary: Float): List<Worker> =
         workerRepository.findAllBySalaryLessThan(salary)
@@ -32,6 +34,7 @@ open class WorkerService(
     open fun findAll(
         filter: FilterWorkersRequest
     ): Page<Worker> {
+        val entityManager = entityManagerFactory.createEntityManager()
         val cb = entityManager.criteriaBuilder
 
         var cq = cb.createQuery(Worker::class.java)

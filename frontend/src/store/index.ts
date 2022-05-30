@@ -5,7 +5,7 @@ import axios from 'axios'
 export default createStore({
   state: {
     workers: [] as Array<WorkerPerson>,
-    url: 'http://labvm-42-12.itmo-lab.cosm-lab.science:8080/workers',
+    url: 'http://labvm-42-12.itmo-lab.cosm-lab.science:8080/app/workers',
     pages: 0,
     pageSize: 5,
     page: 0,

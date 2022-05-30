@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import ru.itmocloudtechnologies.hiring.configuration.InitialWorkersUploader
 import ru.itmocloudtechnologies.hiring.dto.FilterWorkersRequest
 import ru.itmocloudtechnologies.hiring.model.OrganizationType
 import ru.itmocloudtechnologies.hiring.model.Position
@@ -22,8 +23,15 @@ import javax.validation.constraints.PositiveOrZero
 @RequestMapping("workers")
 @Validated
 open class WorkerController(
-    private val workerService: WorkerService
+    private val workerService: WorkerService,
+    private val initialWorkersUploader: InitialWorkersUploader
 ) {
+
+    @GetMapping("/asd")
+    fun asd(){
+        initialWorkersUploader.upload()
+    }
+
 
     @GetMapping
     fun getAllWorkers(

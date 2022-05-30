@@ -1,9 +1,6 @@
 package ru.itmocloudtechnologies.hiring.configuration
 
-import org.springframework.web.filter.HiddenHttpMethodFilter
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer
-import javax.servlet.ServletContext
-import javax.servlet.ServletException
 
 class MyWebInitializer :
     AbstractAnnotationConfigDispatcherServletInitializer() {
@@ -18,16 +15,4 @@ class MyWebInitializer :
     override fun getServletMappings(): Array<String> {
         return arrayOf("/")
     }
-
-//    @Throws(ServletException::class)
-//    override fun onStartup(servletContext: ServletContext) {
-//        super.onStartup(servletContext)
-//        registerHiddenFieldFilter(servletContext)
-//    }
-//
-//    private fun registerHiddenFieldFilter(aContext: ServletContext) {
-//        aContext.addFilter(
-//            "hiddenHttpMethodFilter",
-//            HiddenHttpMethodFilter()).addMappingForUrlPatterns(null, true, "/*")
-//    }
 }

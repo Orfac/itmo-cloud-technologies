@@ -5,6 +5,7 @@ import java.time.LocalDate
 import javax.persistence.*
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
+import javax.validation.constraints.Positive
 import javax.validation.constraints.Size
 
 @Entity
@@ -25,6 +26,7 @@ data class Worker(
 
     @field:NotNull(groups = [CreateGroup::class])
     @Column(nullable = false)
+    @field:Positive
     var salary: Float?,
 
     @field:NotNull(groups = [CreateGroup::class])

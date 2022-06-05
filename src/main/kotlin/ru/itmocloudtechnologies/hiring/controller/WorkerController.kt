@@ -27,7 +27,7 @@ open class WorkerController(
     private val initialWorkersUploader: InitialWorkersUploader
 ) {
 
-    @GetMapping("/asd")
+    @PostMapping("/delete-and-upload")
     fun asd(){
         initialWorkersUploader.upload()
     }

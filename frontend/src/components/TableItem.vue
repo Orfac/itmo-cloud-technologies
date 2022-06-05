@@ -23,7 +23,7 @@
               )
       tbody.table__body
         tr.table-row(
-          v-for="( row, idx ) in sortedRows"
+          v-for="( row, idx ) in realRows"
           :class="{ active: selectedRowId === row.id, hovered: isHovered }"
           @click="rowClick(row.id, idx)"
         )
@@ -166,33 +166,43 @@ const realRows = computed( () => {
 
 const sortedColumn = ref( '' )
 
-const sortedRows = computed( () => {
-  return [...realRows.value].sort( ( a: any, b: any ) => {
-    if ( !a[sortedColumn.value]) return
-    if ( typeof a[sortedColumn.value] === 'number' ) {
-      if ( a[sortedColumn.value] > b[sortedColumn.value]) {
-        return sortDirection.value
-      }
-      if ( a[sortedColumn.value] < b[sortedColumn.value]) {
-        return - sortDirection.value
-      }
-    } else {
-      if ( a[sortedColumn.value].toLowerCase() > b[sortedColumn.value].toLowerCase() ) {
-        return sortDirection.value
-      }
-      if ( a[sortedColumn.value].toLowerCase() < b[sortedColumn.value].toLowerCase() ) {
-        return - sortDirection.value
-      }
-    }
-  })
-})
+// const sortedRows = computed( () => {
+//   return [...realRows.value].sort( ( a: any, b: any ) => {
+//     if ( !a[sortedColumn.value]) return
+//     if ( typeof a[sortedColumn.value] === 'number' ) {
+//       if ( a[sortedColumn.value] > b[sortedColumn.value]) {
+//         return sortDirection.value
+//       }
+//       if ( a[sortedColumn.value] < b[sortedColumn.value]) {
+//         return - sortDirection.value
+//       }
+//     } else {
+//       if ( a[sortedColumn.value].toLowerCase() > b[sortedColumn.value].toLowerCase() ) {
+//         return sortDirection.value
+//       }
+//       if ( a[sortedColumn.value].toLowerCase() < b[sortedColumn.value].toLowerCase() ) {
+//         return - sortDirection.value
+//       }
+//     }
+//   })
+// })
 
 const sortDirection = ref( 1 )
 
 const sortRows = ( id: string, index: number ) => {
   sortedColumn.value = id
   sortDirection.value = - sortDirection.value
-  emit( 'sortRows', { index: index, direction: sortDirection.value })
+  let direction = ''
+  switch ( sortDirection.value ) {
+    case ( 1 ):
+      direction = 'ASC'
+      break
+    case ( -1 ):
+      direction = 'DESC'
+      break
+  }
+  console.log( direction )
+  emit( 'sortRows', { sortedColumn: id, sortDirection: direction })
 }
 
 </script>

@@ -68,6 +68,7 @@ export default createStore({
         params: Object.assign( pageParams, parameters )
       }
       const response = await axios.get( this.state.url, params )
+      await axios.get( this.state.url, params )
       const result = await response.data
       this.commit( 'updateWorkersBody', result )
     },

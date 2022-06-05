@@ -42,6 +42,7 @@
         @deleteRow="deleteWorker"
         @filterRow="filterWorkers"
         @cleanTableFilter="cleanWorkersFilter"
+        @sortRows="sortWorkers"
       )
       PaginationPanel(
         v-if="hasPagination && !workersAbsence"
@@ -207,11 +208,13 @@ const tableColumns = [
     label: 'Координата Х',
     id: 'coordinateX',
     width: '8%',
+    type: 'number'
   },
   {
     label: 'Координата Y',
     id: 'coordinateY',
     width: '10%',
+    type: 'number'
   },
   {
     label: 'Должность',
@@ -224,6 +227,7 @@ const tableColumns = [
     label: 'Зарплата',
     id: 'salary',
     width: '10%',
+    type: 'number'
   },
   {
     label: 'Статус',
@@ -324,6 +328,11 @@ const filterWorkers = ( filterParams: any ) => {
 const cleanWorkersFilter = async ( key: string ) => {
   await delete filteredParams[key]
   const lastParams = Object.assign( filteredParams, params )
+  await store.dispatch( 'getWorkers', lastParams )
+}
+
+const sortWorkers = async ( sortParams: any ) => {
+  const lastParams = Object.assign( sortParams, filteredParams, params )
   await store.dispatch( 'getWorkers', lastParams )
 }
 

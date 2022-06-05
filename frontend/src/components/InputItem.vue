@@ -8,6 +8,7 @@
       :required="isRequired"
       :type="type"
       :value="inputValue"
+      min=0
       @input="$emit('update:inputValue', $event.target.value)"
     )
     .warning( v-if="(inputValue<0 || inputValue>508) && (name === 'Поиск по Coordinate X' || name === 'Поиск по Coordinate Y' )") Недопустимое значение
@@ -38,7 +39,7 @@ const props = defineProps({
     default: ''
   },
   type: {
-    type: String,
+    type: [String, Number],
     required: false,
     default: 'text'
   }

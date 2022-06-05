@@ -2,7 +2,7 @@
 .worker-item
     .worker-item__headers
       h3.worker-item__header {{ workerLabel }}
-      .warning( v-if="hasWarning" ) Заполните все поля и попробуйте еще раз
+      .warning( v-if="hasWarning" ) {{ warning }}
     .worker-item__content
       form.worker-item__inputs(
         v-for="input, idx in inputs"
@@ -114,12 +114,15 @@ const closeWorkerItem = () => {
   emit( 'closeWorkerItem' )
 }
 
-const hasDisable = computed( () => {
-  return hasWarning.value && ( +inputs[1].value < 0 || inputs[0].value === '' || inputs[1].value === '' )
-})
+const warning = ref( '' )
 
 const updateWorkers = async () => {
-  if ( inputs[0].value === '' || inputs[1].value === '' || +inputs[1].value < 0 ) {
+  if ( inputs[0].value === '' || inputs[1].value === '' ) {
+    warning.value = 'Заполните все поля и повторите попытку'
+    hasWarning.value = true
+    return
+  } else if ( +inputs[1].value < 0 ) {
+    warning.value = 'Зарплата должна быть неотрицательна'
     hasWarning.value = true
     return
   }

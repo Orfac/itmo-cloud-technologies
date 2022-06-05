@@ -26,7 +26,7 @@ data class Worker(
 
     @field:NotNull(groups = [CreateGroup::class])
     @Column(nullable = false)
-    @Positive
+    @field:Positive
     var salary: Float?,
 
     @field:NotNull(groups = [CreateGroup::class])

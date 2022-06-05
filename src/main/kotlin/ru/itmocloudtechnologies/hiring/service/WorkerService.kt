@@ -12,30 +12,37 @@ import ru.itmocloudtechnologies.hiring.model.Position
 import ru.itmocloudtechnologies.hiring.model.Worker
 import ru.itmocloudtechnologies.hiring.repository.WorkerRepository
 import java.util.*
+import javax.annotation.PostConstruct
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
 import javax.persistence.criteria.Predicate
 
 @Service
 open class WorkerService{
-
+    lateinit var entityManager: EntityManager
     @Autowired
     lateinit var workerRepository: WorkerRepository
 
     @Autowired
-    lateinit var  entityManagerFactory: EntityManagerFactory
+    lateinit var entityManagerFactory: EntityManagerFactory
 
-    fun getLessThanSalary(salary: Float): List<Worker> =
-        workerRepository.findAllBySalaryLessThan(salary)
+    @PostConstruct
+    fun post(){
+        entityManager = entityManagerFactory.createEntityManager()
+    }
 
-    fun getWithSmallestStatus(): Optional<Worker> = workerRepository.findFirstByOrderByStatusDesc()
+    open fun getLessThanSalary(salary: Float): List<Worker> {
+        return workerRepository.findAllBySalaryLessThan(salary)
+    }
 
-    @Transactional(readOnly = true)
+
+    open fun getWithSmallestStatus(): Optional<Worker> = workerRepository.findFirstByOrderByStatusDesc()
+
     open fun findAll(
         filter: FilterWorkersRequest
     ): Page<Worker> {
-        val entityManager = entityManagerFactory.createEntityManager()
-        val cb = entityManager.criteriaBuilder
+
+        val cb = entityManagerFactory.criteriaBuilder
 
         var cq = cb.createQuery(Worker::class.java)
 

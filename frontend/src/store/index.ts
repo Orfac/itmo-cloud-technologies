@@ -52,8 +52,10 @@ export default createStore({
     updatePageNum( state, pageNum: number ) {
       state.page = pageNum
     },
-    updateWorker( state, worker: WorkerPerson ) {
+    updateWorker( state, worker ) {
       worker.index = 1
+      worker.coordinateX = worker.coordinates.x
+      worker.coordinateY = worker.coordinates.y
       state.workers = [ worker ]
     },
     updateWorkers( state, workers: Array<any> ) {

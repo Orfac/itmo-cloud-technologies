@@ -173,8 +173,8 @@ const finalParams = computed( () => {
     position: filteredPosition.value,
     status: filteredStatus.value,
     organizationType: filteredOrgType.value,
-    coordinateX: +parameters[2].value,
-    coordinateY: +parameters[3].value,
+    coordinatesX: +parameters[2].value,
+    coordinatesY: +parameters[3].value,
     sortDirection: sortedDirection.value,
     sortedColumn: sortedColumn.value
   }

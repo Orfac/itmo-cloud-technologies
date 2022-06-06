@@ -3,6 +3,7 @@
     .worker-item__headers
       h3.worker-item__header {{ workerLabel }}
       .warning( v-if="hasWarning" ) {{ warning }}
+      .warning {{ valError }}
     .worker-item__content
       form.worker-item__inputs(
         v-for="input, idx in inputs"
@@ -27,7 +28,6 @@
         )
       .worker-item__buttons
         ButtonItem.worker-item__button(
-          :class="{ disabled: hasDisable }"
           :label="workerButtonLabel"
           @click="updateWorkers"
           )
@@ -69,6 +69,8 @@ const props = defineProps({
     default: -1
   }
 })
+
+const valError = computed( () => store.getters.valError )
 
 const workers = computed( () => store.getters.workers )
 const hasWarning = ref( false )
@@ -121,8 +123,8 @@ const updateWorkers = async () => {
     warning.value = 'Заполните все поля и повторите попытку'
     hasWarning.value = true
     return
-  } else if ( +inputs[1].value < 0 ) {
-    warning.value = 'Зарплата должна быть неотрицательна'
+  } else if ( +inputs[1].value <= 0 ) {
+    warning.value = 'Зарплата должна быть больше нуля'
     hasWarning.value = true
     return
   }
@@ -143,7 +145,7 @@ const updateWorkers = async () => {
     body.id = props.editingId
     await store.dispatch( 'editWorker', body )
   } else await store.dispatch( 'addWorker', body )
-  await store.dispatch( 'getWorkers' )
+  await store.dispatch( 'getWorkers', {})
   emit( 'closeWorkerItem' )
 }
 

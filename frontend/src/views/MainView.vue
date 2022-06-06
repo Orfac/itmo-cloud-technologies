@@ -23,8 +23,8 @@
             :type="param.type"
           )
         ButtonItem(
-          label="Отчистить все"
-          name="Отчистить все возможные поля"
+          label="Очистить все"
+          name="Очистить все возможные поля"
           @click="cleanParams"
         )
         ButtonItem(
@@ -33,10 +33,13 @@
           :class="{disabled: isDisabled}"
           @click="getWorkers"
         )
+      .warning( v-if="workersAbsence || hasMistake" ) По заданным параметрам работников не найдено
       TableItem(
+        v-else
         :columns="tableColumns"
         :rows="workers"
         :selectedRowId="selectedWorkerId"
+        height="560px"
         @rowClick="selectWorker"
         @editRow="editWorker"
         @deleteRow="deleteWorker"
@@ -45,11 +48,21 @@
         @sortRows="sortWorkers"
       )
       PaginationPanel(
-        v-if="hasPagination && !workersAbsence"
+        v-if="hasPagination && !workersAbsence && !hasMistake"
         @getPagWorkers="getPaginateWorkers"
         )
-      .warning( v-if="workersAbsence" ) По заданным параметрам работников не найдено
       .main-view__additional
+        .main-view__salary
+          InputItem(
+            v-model:inputValue="searchedId"
+            placeholder="Введите id"
+            name="Поиск по id"
+            type="number"
+          )
+          ButtonItem(
+            label="Найти"
+            @click="searchWorkerById"
+          )
         .main-view__salary
           InputItem(
             v-model:inputValue="deletedRequestSalary"
@@ -79,7 +92,7 @@
             @click="getWorkerWithMaxStatus"
           )
       ButtonItem(
-          v-if="!hasPagination"
+          v-if="!hasPagination || hasMistake"
           label="Найти"
           name="Найти всех сотрудников"
           @click="getAllWorkers"
@@ -106,8 +119,6 @@ import store from '@/store'
 
 const hasWorkers = ref( false )
 const hasPagination = ref( true )
-
-const params = reactive({}) as any
 
 let parameters = reactive([
   {
@@ -148,21 +159,25 @@ let parameters = reactive([
   },
 ])
 
-watch( () => parameters[0].value, ( val ) => {
-  params.name = val
-  if ( !params.name.length ) delete params.name
-})
-watch( () => parameters[1].value, ( val ) => {
-  params.salary = val
-  if ( !params.salary ) delete params.salary
-})
-watch( () => parameters[2].value, ( val ) => {
-  params.coordinatesX = val
-  if ( !val.length ) delete params.сoordinatesX
-})
-watch( () => parameters[3].value, ( val ) => {
-  params.coordinatesY = val
-  if ( !val.length ) delete params.сoordinatesY
+const filteredPosition = ref( '' )
+const filteredStatus = ref( '' )
+const filteredOrgType = ref( '' )
+const sortedDirection = ref( '' )
+const sortedColumn = ref( '' )
+const searchedId = ref( '' )
+
+const finalParams = computed( () => {
+  return {
+    name: parameters[0].value,
+    salary: +parameters[1].value,
+    position: filteredPosition.value,
+    status: filteredStatus.value,
+    organizationType: filteredOrgType.value,
+    coordinateX: +parameters[2].value,
+    coordinateY: +parameters[3].value,
+    sortDirection: sortedDirection.value,
+    sortedColumn: sortedColumn.value
+  }
 })
 
 const isDisabled = computed( () => {
@@ -172,7 +187,8 @@ const isDisabled = computed( () => {
 const getWorkers = async () => {
   await store.dispatch( 'updatePage', +parameters[4].value - 1 )
   await store.dispatch( 'updatePageSize', parameters[5].value )
-  await store.dispatch( 'getWorkers', params )
+  await store.dispatch( 'getWorkers', finalParams.value )
+  searchedId.value = ''
   hasWorkers.value = true
   hasPagination.value = true
 }
@@ -181,7 +197,7 @@ const workersAbsence = computed( () => hasWorkers.value && !workers.value.length
 
 const getPaginateWorkers = async () => {
   parameters[4].value = ( store.getters.page + 1 ).toString()
-  await store.dispatch( 'getWorkers', params )
+  await store.dispatch( 'getWorkers', finalParams.value )
 }
 
 const buttonLabel = computed( () => {
@@ -197,12 +213,17 @@ const tableColumns = [
   {
     label: '№',
     id: 'index',
-    width: '6%'
+    width: '4%'
   },
   {
     label: 'Имя',
     id: 'name',
-    width: '7%'
+    width: '5%'
+  },
+  {
+    label: 'Id',
+    id: 'id',
+    width: '4%'
   },
   {
     label: 'Координата Х',
@@ -257,7 +278,7 @@ const tableColumns = [
 
 const deleteWorker = async ( id: number ) => {
   await store.dispatch( 'deleteWorker', id )
-  store.dispatch( 'getWorkers', params )
+  store.dispatch( 'getWorkers', finalParams.value )
 }
 
 const selectWorker = ( id: number ) => {
@@ -302,11 +323,12 @@ const getSalaryWorkers = async () => {
 const deleteSalaryWorkers = async () => {
   if ( !deletedRequestSalary.value.length ) return
   await store.dispatch( 'deleteSalaryWorkers', deletedRequestSalary.value )
-  store.dispatch( 'getWorkers', params )
+  store.dispatch( 'getWorkers', finalParams.value )
 }
 
 const getAllWorkers = async () => {
   parameters[4].value = '1'
+  searchedId.value = ''
   store.dispatch( 'getWorkers', {})
   hasPagination.value = true
 }
@@ -317,23 +339,45 @@ const cleanParams = () => {
   }
 }
 
-const filteredParams = reactive({}) as any
-
 const filterWorkers = ( filterParams: any ) => {
-  filteredParams[filterParams.key] = filterParams.value
-  const lastParams = Object.assign( filteredParams, params )
-  store.dispatch( 'getWorkers', lastParams )
+  switch ( filterParams.key ) {
+    case 'position':
+      filteredPosition.value = filterParams.value
+      break
+    case 'status':
+      filteredStatus.value = filterParams.value
+      break
+    case 'organizationType':
+      filteredOrgType.value = filterParams.value
+  }
+  store.dispatch( 'getWorkers', finalParams.value )
 }
 
 const cleanWorkersFilter = async ( key: string ) => {
-  await delete filteredParams[key]
-  const lastParams = Object.assign( filteredParams, params )
-  await store.dispatch( 'getWorkers', lastParams )
+  switch ( key ) {
+    case 'position':
+      filteredPosition.value = ''
+      break
+    case 'status':
+      filteredStatus.value = ''
+      break
+    case 'organizationType':
+      filteredOrgType.value = ''
+  }
+  await store.dispatch( 'getWorkers', finalParams.value )
 }
 
 const sortWorkers = async ( sortParams: any ) => {
-  const lastParams = Object.assign( sortParams, filteredParams, params )
-  await store.dispatch( 'getWorkers', lastParams )
+  sortedDirection.value = sortParams.sortDirection
+  sortedColumn.value = sortParams.sortedColumn
+  await store.dispatch( 'getWorkers', finalParams.value )
+}
+
+const hasMistake = computed( () => store.getters.statusError  )
+
+const searchWorkerById = async () => {
+  if ( searchedId.value === '' ) return
+  await store.dispatch( 'getWorkerById', +searchedId.value )
 }
 
 </script>
@@ -351,9 +395,10 @@ const sortWorkers = async ( sortParams: any ) => {
     flex-direction: column
     align-items: center
   &__additional
-    width: 80%
     display: flex
     justify-content: space-between
+  &__salary
+    margin-right: 50px
   &__params
     display: grid
     grid-template-columns: 1fr 1fr 1fr 1fr

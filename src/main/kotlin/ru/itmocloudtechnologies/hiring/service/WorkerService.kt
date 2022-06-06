@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.itmocloudtechnologies.hiring.dto.FilterWorkersRequest
+import ru.itmocloudtechnologies.hiring.model.Coordinates
 import ru.itmocloudtechnologies.hiring.model.Position
 import ru.itmocloudtechnologies.hiring.model.Worker
 import ru.itmocloudtechnologies.hiring.repository.WorkerRepository
@@ -58,13 +59,17 @@ open class WorkerService {
             )
         }
 
-//        filter.salary?.let {
-//            predicates.add(
-//                cb.equal(
-//                    root.get<Float>("salary").`as`(String::class.java), it.toString()
-//                )
-//            )
-//        }
+        filter.salary?.let {
+            predicates.add(
+                cb.le(
+                    cb.abs(
+                        cb.diff(
+                            root.get("salary"), it
+                        )
+                    ), 1e-2
+                )
+            )
+        }
 
         filter.position?.let {
             predicates.add(
@@ -90,25 +95,31 @@ open class WorkerService {
             )
         }
 
-//        filter.coordinatesX?.let {
-//            predicates.add(
-//                cb.equal(
-//                    root.get<Coordinates>("coordinates")
-//                        .get<Double>("x")
-//                        .`as`(String::class.java), it.toString()
-//                )
-//            )
-//        }
-//
-//        filter.coordinatesY?.let {
-//            predicates.add(
-//                cb.equal(
-//                    root.get<Coordinates>("coordinates")
-//                        .get<Double>("y")
-//                        .`as`(String::class.java), it.toString()
-//                )
-//            )
-//        }
+        filter.coordinatesX?.let {
+            predicates.add(
+                cb.le(
+                    cb.abs(
+                        cb.diff(
+                            root.get<Coordinates>("coordinates")
+                                .get("x"), it
+                        )
+                    ), 1e-5
+                )
+            )
+        }
+
+        filter.coordinatesY?.let {
+            predicates.add(
+                cb.le(
+                    cb.abs(
+                        cb.diff(
+                            root.get<Coordinates>("coordinates")
+                                .get("y"), it
+                        )
+                    ), 1e-5
+                )
+            )
+        }
 
         cq = cq.select(root).where(
             cb.and(
@@ -116,10 +127,9 @@ open class WorkerService {
             )
         )
 
-
         val path = when (filter.sortedColumn) {
-            "coordinateX" -> root.get<Any>("coordinate").get("x")
-            "coordinateY" -> root.get<Any>("coordinate").get("y")
+            "coordinatesX" -> root.get<Any>("coordinates").get("x")
+            "coordinatesY" -> root.get<Any>("coordinates").get("y")
             else -> root.get<Any>(filter.sortedColumn)
         }
 
@@ -136,19 +146,7 @@ open class WorkerService {
         query.maxResults = filter.pageSize
         query.firstResult = filter.page * filter.pageSize
 
-        val result = query.resultList
-            .filter {
-                filter.salary == null
-                        || it.salary.toString() == filter.salary.toString()
-            }.filter {
-                filter.coordinatesX == null ||
-                        it.coordinates?.x.toString() == filter.coordinatesX.toString()
-            }.filter {
-                filter.coordinatesY == null ||
-                        it.coordinates?.y.toString() == filter.coordinatesY.toString()
-            }
-
-        return PageImpl(result, pageable, maxCount.toLong())
+        return PageImpl(query.resultList, pageable, maxCount.toLong())
     }
 
     @Transactional

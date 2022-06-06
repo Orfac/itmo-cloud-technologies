@@ -10,7 +10,7 @@
             <property name="javax.persistence.jdbc.password" value="qwerty"/>
 
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL10Dialect"/>
-
+            <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.hbm2ddl.auto" value="create"/>
             <!--            <property name="javax.persistence.jdbc.url"-->
             <!--                      value="jdbc:postgresql://pg:5432/studs"/>-->

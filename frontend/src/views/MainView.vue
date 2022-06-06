@@ -23,8 +23,8 @@
             :type="param.type"
           )
         ButtonItem(
-          label="Отчистить все"
-          name="Отчистить все возможные поля"
+          label="Очистить все"
+          name="Очистить все возможные поля"
           @click="cleanParams"
         )
         ButtonItem(

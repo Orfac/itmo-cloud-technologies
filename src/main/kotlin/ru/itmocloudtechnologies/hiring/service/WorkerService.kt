@@ -7,7 +7,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.itmocloudtechnologies.hiring.dto.FilterWorkersRequest
-import ru.itmocloudtechnologies.hiring.model.Coordinates
 import ru.itmocloudtechnologies.hiring.model.Position
 import ru.itmocloudtechnologies.hiring.model.Worker
 import ru.itmocloudtechnologies.hiring.repository.WorkerRepository
@@ -18,8 +17,9 @@ import javax.persistence.EntityManagerFactory
 import javax.persistence.criteria.Predicate
 
 @Service
-open class WorkerService{
+open class WorkerService {
     lateinit var entityManager: EntityManager
+
     @Autowired
     lateinit var workerRepository: WorkerRepository
 
@@ -27,7 +27,7 @@ open class WorkerService{
     lateinit var entityManagerFactory: EntityManagerFactory
 
     @PostConstruct
-    fun post(){
+    fun post() {
         entityManager = entityManagerFactory.createEntityManager()
     }
 
@@ -58,13 +58,13 @@ open class WorkerService{
             )
         }
 
-        filter.salary?.let {
-            predicates.add(
-                cb.equal(
-                    root.get<Float>("salary").`as`(String::class.java), it.toString()
-                )
-            )
-        }
+//        filter.salary?.let {
+//            predicates.add(
+//                cb.equal(
+//                    root.get<Float>("salary").`as`(String::class.java), it.toString()
+//                )
+//            )
+//        }
 
         filter.position?.let {
             predicates.add(
@@ -90,25 +90,25 @@ open class WorkerService{
             )
         }
 
-        filter.coordinatesX?.let {
-            predicates.add(
-                cb.equal(
-                    root.get<Coordinates>("coordinates")
-                        .get<Double>("x")
-                        .`as`(String::class.java), it.toString()
-                )
-            )
-        }
-
-        filter.coordinatesY?.let {
-            predicates.add(
-                cb.equal(
-                    root.get<Coordinates>("coordinates")
-                        .get<Double>("y")
-                        .`as`(String::class.java), it.toString()
-                )
-            )
-        }
+//        filter.coordinatesX?.let {
+//            predicates.add(
+//                cb.equal(
+//                    root.get<Coordinates>("coordinates")
+//                        .get<Double>("x")
+//                        .`as`(String::class.java), it.toString()
+//                )
+//            )
+//        }
+//
+//        filter.coordinatesY?.let {
+//            predicates.add(
+//                cb.equal(
+//                    root.get<Coordinates>("coordinates")
+//                        .get<Double>("y")
+//                        .`as`(String::class.java), it.toString()
+//                )
+//            )
+//        }
 
         cq = cq.select(root).where(
             cb.and(
@@ -116,10 +116,17 @@ open class WorkerService{
             )
         )
 
+
+        val path = when (filter.sortedColumn) {
+            "coordinateX" -> root.get<Any>("coordinate").get("x")
+            "coordinateY" -> root.get<Any>("coordinate").get("y")
+            else -> root.get<Any>(filter.sortedColumn)
+        }
+
         cq = if (filter.sortedDirection == "ASC") {
-            cq.orderBy(cb.asc(root.get<Any>(filter.sortedColumn)))
+            cq.orderBy(cb.asc(path))
         } else {
-            cq.orderBy(cb.desc(root.get<Any>(filter.sortedColumn)))
+            cq.orderBy(cb.desc(path))
         }
 
         val query = entityManager.createQuery(cq)
@@ -129,7 +136,19 @@ open class WorkerService{
         query.maxResults = filter.pageSize
         query.firstResult = filter.page * filter.pageSize
 
-        return PageImpl(query.resultList, pageable, maxCount.toLong())
+        val result = query.resultList
+            .filter {
+                filter.salary == null
+                        || it.salary.toString() == filter.salary.toString()
+            }.filter {
+                filter.coordinatesX == null ||
+                        it.coordinates?.x.toString() == filter.coordinatesX.toString()
+            }.filter {
+                filter.coordinatesY == null ||
+                        it.coordinates?.y.toString() == filter.coordinatesY.toString()
+            }
+
+        return PageImpl(result, pageable, maxCount.toLong())
     }
 
     @Transactional

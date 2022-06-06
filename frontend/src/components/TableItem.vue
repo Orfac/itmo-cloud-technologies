@@ -95,11 +95,6 @@ const props = defineProps({
     required: false,
     default: '',
   },
-  searchedValue: {
-    type: String,
-    required: false,
-    default: '',
-  },
   filteredRow: {
     type: Number,
     required: false,
@@ -147,9 +142,6 @@ const cleanTableFilter = ( key: string ) => {
   counter.value++
   emit( 'cleanTableFilter', key )
 }
-const filterRows = ( rows: Array<any> ) => {
-  return rows
-}
 
 const realRows = computed( () => {
   let displayedRows = []
@@ -158,39 +150,12 @@ const realRows = computed( () => {
   } else {
     displayedRows = props.rows
   }
-  displayedRows = filterRows( displayedRows )
-  const searchedElement = props.columns[searchedRow.value].id
-  if ( props.searchedValue ) return displayedRows.filter( ( item: any ) => item[searchedElement].toLowerCase().includes( props.searchedValue.toLowerCase() ) )
-  else return displayedRows
+  return displayedRows
 })
 
-const sortedColumn = ref( '' )
-
-// const sortedRows = computed( () => {
-//   return [...realRows.value].sort( ( a: any, b: any ) => {
-//     if ( !a[sortedColumn.value]) return
-//     if ( typeof a[sortedColumn.value] === 'number' ) {
-//       if ( a[sortedColumn.value] > b[sortedColumn.value]) {
-//         return sortDirection.value
-//       }
-//       if ( a[sortedColumn.value] < b[sortedColumn.value]) {
-//         return - sortDirection.value
-//       }
-//     } else {
-//       if ( a[sortedColumn.value].toLowerCase() > b[sortedColumn.value].toLowerCase() ) {
-//         return sortDirection.value
-//       }
-//       if ( a[sortedColumn.value].toLowerCase() < b[sortedColumn.value].toLowerCase() ) {
-//         return - sortDirection.value
-//       }
-//     }
-//   })
-// })
 
 const sortDirection = ref( 1 )
-
 const sortRows = ( id: string, index: number ) => {
-  sortedColumn.value = id
   sortDirection.value = - sortDirection.value
   let direction = ''
   switch ( sortDirection.value ) {
@@ -201,7 +166,6 @@ const sortRows = ( id: string, index: number ) => {
       direction = 'DESC'
       break
   }
-  console.log( direction )
   emit( 'sortRows', { sortedColumn: id, sortDirection: direction })
 }
 

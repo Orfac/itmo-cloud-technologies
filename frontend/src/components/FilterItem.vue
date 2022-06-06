@@ -3,7 +3,7 @@ Popper
   img.filter( src="@/assets/icons/controls/filter.svg" )
   template( #content )
     .filter-item
-      button( @click="cleanFilter" ) Отчистить
+      button( @click="cleanFilter" ) Очистить
       .filter-item__element( v-for="value, idx in displayedValues" )
         input.filter-item__checkbox.custom-checkbox(
           :id="value"

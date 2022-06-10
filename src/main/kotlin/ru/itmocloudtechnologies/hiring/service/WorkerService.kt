@@ -39,11 +39,13 @@ open class WorkerService {
 
     open fun getWithSmallestStatus(): Optional<Worker> = workerRepository.findFirstByOrderByStatusDesc()
 
+    @Transactional(readOnly = true)
     open fun findAll(
         filter: FilterWorkersRequest
     ): Page<Worker> {
+        val em = entityManagerFactory.createEntityManager()
 
-        val cb = entityManagerFactory.criteriaBuilder
+        val cb = em.criteriaBuilder
 
         var cq = cb.createQuery(Worker::class.java)
 
@@ -139,7 +141,7 @@ open class WorkerService {
             cq.orderBy(cb.desc(path))
         }
 
-        val query = entityManager.createQuery(cq)
+        val query = em.createQuery(cq)
         val maxCount = query.resultList.size
         val pageable = PageRequest.of(filter.page, filter.pageSize)
 
@@ -180,7 +182,6 @@ open class WorkerService {
                     status = worker.status ?: status
                     organizationType = worker.organizationType ?: organizationType
                 }
-
                 workerRepository.save(it)
             }
 

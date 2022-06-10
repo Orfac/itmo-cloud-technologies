@@ -145,12 +145,12 @@ export default createStore({
       })
     },
     async getWorkerById( state, id: number ) {
-      const response = await fetch( this.state.url + `/${id}` )
-      if ( response.ok ) {
+      try {
+        const response = await fetch( this.state.url + `/${id}` )
         const result = await response.json()
         this.commit( 'updateWorker', result )
-      } else {
-        this.commit( 'setError', response.status )
+      } catch {
+        console.log( 'Worker по запрашиваемому id не найден' )
       }
     }
   },

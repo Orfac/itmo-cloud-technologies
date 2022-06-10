@@ -35,6 +35,7 @@ open class WorkerController(
 
     @GetMapping
     fun getAllWorkers(
+        @RequestParam(required = false) id: Long?,
         @RequestParam(required = false) name: String?,
         @RequestParam(required = false) salary: Float?,
         @RequestParam(required = false) position: Position?,
@@ -48,6 +49,7 @@ open class WorkerController(
         @RequestParam(required = false, defaultValue = 5.toString()) @Positive pageSize: Int
     ): Page<Worker> {
         val filter = FilterWorkersRequest(
+            id,
             name,
             coordinatesX,
             coordinatesY,

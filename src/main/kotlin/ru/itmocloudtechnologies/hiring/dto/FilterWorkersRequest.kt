@@ -5,6 +5,7 @@ import ru.itmocloudtechnologies.hiring.model.Position
 import ru.itmocloudtechnologies.hiring.model.Status
 
 data class FilterWorkersRequest(
+    val id: Long?,
     val name: String?,
     val coordinatesX: Double?,
     val coordinatesY: Double?,

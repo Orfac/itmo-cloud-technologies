@@ -53,6 +53,14 @@ open class WorkerService {
 
         val predicates = mutableListOf<Predicate>()
 
+        filter.id?.let {
+            predicates.add(
+                cb.equal(
+                    root.get<Long>("id"), it
+                )
+            )
+        }
+
         filter.name?.let {
             predicates.add(
                 cb.like(
